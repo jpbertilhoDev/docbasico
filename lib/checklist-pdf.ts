@@ -28,7 +28,7 @@ export async function generateChecklistPDF(options: ChecklistPDFOptions): Promis
 
     // Criar HTML temporário para o PDF
     const htmlContent = createChecklistHTML(options);
-    
+
     // Criar elemento temporário
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlContent;
@@ -80,7 +80,7 @@ export async function generateChecklistPDF(options: ChecklistPDFOptions): Promis
  */
 function createChecklistHTML(options: ChecklistPDFOptions): string {
   const { serviceName, clientName, appointmentDate, appointmentTime, documents } = options;
-  
+
   const checkedCount = documents.filter(d => d.checked).length;
   const requiredCount = documents.filter(d => d.required).length;
   const checkedRequired = documents.filter(d => d.required && d.checked).length;
@@ -235,9 +235,9 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
     let yPosition = 20;
 
     // Cores profissionais
-    const primaryColor = [37, 99, 235]; // Azul corporativo
-    const grayColor = [107, 114, 128]; // Cinza para textos secundários
-    const redColor = [220, 38, 38]; // Vermelho para obrigatório
+    const primaryColor: [number, number, number] = [37, 99, 235]; // Azul corporativo
+    const grayColor: [number, number, number] = [107, 114, 128]; // Cinza para textos secundários
+    const redColor: [number, number, number] = [220, 38, 38]; // Vermelho para obrigatório
 
     // ===== CABEÇALHO PROFISSIONAL =====
     // Logo/Nome da empresa
@@ -245,24 +245,24 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
     pdf.setFont(undefined, "bold");
     pdf.setTextColor(37, 99, 235);
     pdf.text("Doc Basico", 15, yPosition);
-    
+
     // Linha divisória
     pdf.setDrawColor(37, 99, 235);
     pdf.setLineWidth(0.5);
     pdf.line(15, yPosition + 3, pageWidth - 15, yPosition + 3);
-    
+
     yPosition += 10;
-    
+
     // Título do documento
     pdf.setFontSize(16);
     pdf.setTextColor(0, 0, 0);
     pdf.text("CHECKLIST DE DOCUMENTOS", 15, yPosition);
-    
+
     yPosition += 3;
     pdf.setFontSize(11);
     pdf.setTextColor(...grayColor);
     pdf.text(options.serviceName, 15, yPosition);
-    
+
     yPosition += 12;
 
     // ===== INFORMAÇÕES DO CLIENTE =====
@@ -270,55 +270,55 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
     pdf.setFillColor(248, 250, 252); // Cinza muito claro
     pdf.setDrawColor(226, 232, 240);
     pdf.roundedRect(15, yPosition, pageWidth - 30, 25, 2, 2, "FD");
-    
+
     yPosition += 6;
-    
+
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0);
     pdf.setFont(undefined, "bold");
     pdf.text("Cliente:", 20, yPosition);
     pdf.setFont(undefined, "normal");
     pdf.text(options.clientName, 38, yPosition);
-    
+
     yPosition += 6;
-    
+
     const dateStr = new Date(options.appointmentDate).toLocaleDateString("pt-PT", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     });
-    
+
     pdf.setFont(undefined, "bold");
     pdf.text("Data da Consulta:", 20, yPosition);
     pdf.setFont(undefined, "normal");
     pdf.text(`${dateStr} as ${options.appointmentTime}`, 53, yPosition);
-    
+
     yPosition += 6;
-    
+
     const totalDocs = options.documents.length;
     const requiredDocs = options.documents.filter(d => d.required).length;
-    
+
     pdf.setFont(undefined, "bold");
     pdf.text("Total de Documentos:", 20, yPosition);
     pdf.setFont(undefined, "normal");
     pdf.text(`${totalDocs} (${requiredDocs} obrigatorios)`, 58, yPosition);
-    
+
     yPosition += 12;
 
     // ===== AVISO IMPORTANTE =====
     pdf.setFillColor(254, 242, 242); // Vermelho muito claro
     pdf.setDrawColor(220, 38, 38);
     pdf.roundedRect(15, yPosition, pageWidth - 30, 12, 2, 2, "FD");
-    
+
     yPosition += 4;
-    
+
     pdf.setFontSize(9);
     pdf.setFont(undefined, "bold");
     pdf.setTextColor(220, 38, 38);
     pdf.text("IMPORTANTE:", 20, yPosition);
     pdf.setFont(undefined, "normal");
     pdf.text("Traga os documentos ORIGINAIS e copias autenticadas quando aplicavel.", 42, yPosition);
-    
+
     yPosition += 16;
 
     // ===== LISTA DE DOCUMENTOS =====
@@ -337,7 +337,7 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
       if (yPosition > pageHeight - 30) {
         pdf.addPage();
         yPosition = 25;
-        
+
         // Repetir título na nova página
         pdf.setFontSize(12);
         pdf.setFont(undefined, "bold");
@@ -352,21 +352,21 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
       pdf.setFillColor(255, 255, 255);
       pdf.setDrawColor(226, 232, 240);
       pdf.roundedRect(15, yPosition - 3, pageWidth - 30, boxHeight, 1, 1, "D");
-      
+
       // Número do documento
       pdf.setFillColor(37, 99, 235);
       pdf.circle(20, yPosition + 2, 3, "F");
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(8);
       pdf.text(docNumber.toString(), 20, yPosition + 2.5, { align: "center" });
-      
+
       // Nome do documento
       pdf.setFontSize(10);
       pdf.setFont(undefined, "bold");
       pdf.setTextColor(0, 0, 0);
       const docName = doc.name;
       pdf.text(docName, 28, yPosition + 2);
-      
+
       // Badge obrigatório/opcional
       const badgeX = pageWidth - 35;
       if (doc.required) {
@@ -384,7 +384,7 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
         pdf.setFont(undefined, "bold");
         pdf.text("OPCIONAL", badgeX + 8, yPosition + 2.5, { align: "center" });
       }
-      
+
       yPosition += 6;
 
       // Descrição (se existir)
@@ -405,28 +405,28 @@ export async function generateChecklistPDFServer(options: ChecklistPDFOptions): 
     const totalPages = pdf.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
-      
+
       // Linha divisória no footer
       pdf.setDrawColor(226, 232, 240);
       pdf.setLineWidth(0.3);
       pdf.line(15, pageHeight - 15, pageWidth - 15, pageHeight - 15);
-      
+
       // Texto do footer
       pdf.setFontSize(8);
       pdf.setTextColor(107, 114, 128);
       pdf.setFont(undefined, "normal");
-      
+
       // Esquerda: Data de geração
       pdf.text(
         `Gerado em ${new Date().toLocaleDateString("pt-PT")} as ${new Date().toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}`,
         15,
         pageHeight - 10
       );
-      
+
       // Centro: Nome da empresa
       pdf.setFont(undefined, "bold");
       pdf.text("Doc Basico", pageWidth / 2, pageHeight - 10, { align: "center" });
-      
+
       // Direita: Página
       pdf.setFont(undefined, "normal");
       pdf.text(`Pagina ${i} de ${totalPages}`, pageWidth - 15, pageHeight - 10, { align: "right" });

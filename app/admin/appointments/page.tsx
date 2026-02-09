@@ -106,10 +106,11 @@ export default function AppointmentsPage() {
       // Usar o cliente Supabase diretamente (já autenticado)
       const { error } = await supabase
         .from('appointments')
-        .update({ 
-          status: newStatus as any,
+        // @ts-ignore - Tipagem do Supabase causa erro no build
+        .update({
+          status: newStatus,
           updated_at: new Date().toISOString()
-        } as any)
+        })
         .eq('id', id);
 
       if (error) {
@@ -129,43 +130,43 @@ export default function AppointmentsPage() {
     console.log('[DELETE] ========================================');
     console.log('[DELETE] Iniciando exclusão do agendamento:', id);
     console.log('[DELETE] ========================================');
-    
+
     setDeleting(id); // Marcar como deletando
-    
+
     try {
       // Verificar sessão antes de deletar
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       console.log('[DELETE] Sessão do usuário:', session ? 'Autenticado' : 'Não autenticado');
       console.log('[DELETE] User ID:', session?.user?.id);
       console.log('[DELETE] Email:', session?.user?.email);
-      
+
       if (sessionError) {
         console.error('[DELETE] Erro ao obter sessão:', sessionError);
         throw new Error('Erro ao verificar autenticação');
       }
-      
+
       if (!session) {
         throw new Error('Usuário não autenticado. Por favor, faça login novamente.');
       }
-      
+
       console.log('[DELETE] Chamando Supabase delete...');
       console.log('[DELETE] ID do agendamento:', id);
-      
+
       // Verificar se o agendamento existe antes
       const { data: beforeDelete } = await supabase
         .from('appointments')
         .select('id, name')
         .eq('id', id)
         .maybeSingle();
-      
+
       console.log('[DELETE] Agendamento antes de deletar:', beforeDelete);
-      
+
       if (!beforeDelete) {
         console.log('[DELETE] ⚠️ Agendamento não encontrado, removendo da lista mesmo assim');
         setAppointments(prev => prev.filter(apt => apt.id !== id));
         return;
       }
-      
+
       // Usar o cliente Supabase diretamente (já autenticado)
       // Deletar usando select para ver o que foi deletado
       const { data: deletedData, error } = await supabase
@@ -190,20 +191,20 @@ export default function AppointmentsPage() {
       // Verificar se realmente deletou algo
       if (deletedData && deletedData.length > 0) {
         console.log('[DELETE] ✅ DELETE executado com sucesso! Registros deletados:', deletedData.length);
-        console.log('[DELETE] IDs deletados:', deletedData.map(d => d.id));
+        console.log('[DELETE] IDs deletados:', (deletedData as any[]).map((d: any) => d.id));
       } else {
         console.warn('[DELETE] ⚠️ DELETE retornou sucesso, mas nenhum registro foi deletado!');
         console.warn('[DELETE] Isso pode indicar problema com políticas RLS');
-        
+
         // Verificar se ainda existe
         const { data: checkData, error: checkError } = await supabase
           .from('appointments')
           .select('id')
           .eq('id', id)
           .maybeSingle();
-        
+
         console.log('[DELETE] Verificação pós-DELETE:', { checkData, checkError });
-        
+
         if (checkData) {
           console.error('[DELETE] ❌ Agendamento ainda existe no banco após DELETE!');
           console.error('[DELETE] Isso indica problema com políticas RLS ou permissões');
@@ -212,16 +213,16 @@ export default function AppointmentsPage() {
           console.log('[DELETE] ✅ Agendamento não existe mais, considerando exclusão bem-sucedida');
         }
       }
-      
+
       // Remover da lista localmente para feedback imediato
       setAppointments(prev => {
         const filtered = prev.filter(apt => apt.id !== id);
         console.log('[DELETE] Lista atualizada. Antes:', prev.length, 'Depois:', filtered.length);
         return filtered;
       });
-      
+
       console.log('[DELETE] ✅ Exclusão concluída com sucesso!');
-      
+
       toast.success("Agendamento excluído com sucesso!");
     } catch (error: any) {
       console.error("[DELETE] ❌ Erro ao excluir agendamento:", error);
@@ -494,7 +495,7 @@ export default function AppointmentsPage() {
                           Verificar Documentos
                         </button>
                       )}
-                      
+
                       {appointment.status === "pending" && (
                         <>
                           <button
@@ -556,15 +557,15 @@ export default function AppointmentsPage() {
                           console.log('[DELETE] Botão clicado para agendamento:', appointment.id);
                           console.log('[DELETE] Nome:', appointment.name);
                           console.log('[DELETE] ========================================');
-                          
+
                           const confirmed = await dialog.confirm(
                             "Excluir Agendamento",
                             `Tem CERTEZA ABSOLUTA que deseja EXCLUIR PERMANENTEMENTE este agendamento?\n\nCliente: ${appointment.name}\nServiço: ${appointment.service_name}\n\nEsta ação não pode ser desfeita!`,
                             "danger"
                           );
-                          
+
                           console.log('[DELETE] Confirmação:', confirmed);
-                          
+
                           if (confirmed) {
                             console.log('[DELETE] Usuário confirmou exclusão, chamando deleteAppointment...');
                             deleteAppointment(appointment.id);
@@ -573,11 +574,10 @@ export default function AppointmentsPage() {
                           }
                         }}
                         disabled={deleting === appointment.id}
-                        className={`px-3 py-1.5 rounded text-sm transition-colors flex items-center gap-2 mt-2 ${
-                          deleting === appointment.id
-                            ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                            : 'bg-gray-600 text-white hover:bg-gray-700'
-                        }`}
+                        className={`px-3 py-1.5 rounded text-sm transition-colors flex items-center gap-2 mt-2 ${deleting === appointment.id
+                          ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                          : 'bg-gray-600 text-white hover:bg-gray-700'
+                          }`}
                         title="Excluir permanentemente do banco de dados"
                         type="button"
                       >
@@ -603,7 +603,7 @@ export default function AppointmentsPage() {
       </div>
       <dialog.DialogRenderer />
       <toast.ToastRenderer />
-      
+
       {/* Modal de Verificação de Documentos */}
       {verifyingChecklist && (
         <ChecklistVerification

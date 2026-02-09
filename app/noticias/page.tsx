@@ -59,18 +59,17 @@ export default function NoticiasPage() {
       try {
         const baseUrl = window.location.origin;
         const params = new URLSearchParams();
-        
+
         if (selectedCategory) {
           params.append('category', selectedCategory);
         }
-        
+
         if (searchQuery.trim()) {
           params.append('search', searchQuery.trim());
         }
 
         const res = await fetch(`${baseUrl}/api/posts?${params.toString()}`, {
-          cache: 'force-cache',
-          next: { revalidate: 180 } // 3 minutos
+          cache: 'no-store'
         });
         if (res.ok) {
           const data = await res.json();
@@ -113,7 +112,7 @@ export default function NoticiasPage() {
             Notícias e <span className="text-primary-600">Atualizações</span>
           </h1>
           <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Mantenha-se informado sobre mudanças nas leis, processos e regulamentações 
+            Mantenha-se informado sobre mudanças nas leis, processos e regulamentações
             que afetam imigrantes em Portugal.
           </p>
         </div>
@@ -122,7 +121,7 @@ export default function NoticiasPage() {
         <div className="mb-10 space-y-6">
           {/* Search Bar */}
           <div className="w-full max-w-xl mx-auto">
-            <SearchBar 
+            <SearchBar
               onSearch={handleSearch}
               placeholder="Pesquisar notícias..."
               isLoading={loading}
@@ -139,7 +138,7 @@ export default function NoticiasPage() {
               >
                 {showFilters ? "Ocultar filtros" : "Filtrar por categoria"}
               </button>
-              
+
               {hasActiveFilters && (
                 <>
                   <span className="text-gray-300">|</span>
@@ -158,11 +157,10 @@ export default function NoticiasPage() {
               <div className="flex flex-wrap justify-center gap-2 animate-fade-in">
                 <button
                   onClick={() => handleCategoryChange("")}
-                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                    !selectedCategory
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${!selectedCategory
                       ? "bg-primary-600 text-white shadow-md shadow-primary-600/20 translate-y-[-1px]"
                       : "bg-white text-gray-600 hover:bg-gray-50 hover:text-primary-600 border border-gray-200 hover:border-primary-200"
-                  }`}
+                    }`}
                 >
                   Todas
                 </button>
@@ -170,11 +168,10 @@ export default function NoticiasPage() {
                   <button
                     key={category.id}
                     onClick={() => handleCategoryChange(category.slug)}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                      selectedCategory === category.slug
+                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${selectedCategory === category.slug
                         ? "bg-primary-600 text-white shadow-md shadow-primary-600/20 translate-y-[-1px]"
                         : "bg-white text-gray-600 hover:bg-gray-50 hover:text-primary-600 border border-gray-200 hover:border-primary-200"
-                    }`}
+                      }`}
                   >
                     {category.name}
                   </button>
@@ -215,8 +212,8 @@ export default function NoticiasPage() {
               <Search className="w-8 h-8 text-gray-400" />
             </div>
             <h2 className="text-xl font-bold mb-3 text-gray-900">
-              {hasActiveFilters 
-                ? "Nenhuma notícia encontrada" 
+              {hasActiveFilters
+                ? "Nenhuma notícia encontrada"
                 : "Nenhuma notícia publicada ainda"}
             </h2>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -262,7 +259,7 @@ export default function NoticiasPage() {
                       {post.categories.name}
                     </span>
                   )}
-                  
+
                   <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>{post.published_at && formatDate(post.published_at)}</span>
@@ -271,13 +268,13 @@ export default function NoticiasPage() {
                   <h2 className="text-lg font-bold mb-3 text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 leading-snug">
                     {post.title}
                   </h2>
-                  
+
                   {post.excerpt && (
                     <p className="text-gray-600 mb-6 line-clamp-3 text-sm leading-relaxed flex-grow">
                       {post.excerpt}
                     </p>
                   )}
-                  
+
                   <div className="flex items-center text-primary-600 font-bold text-sm mt-auto pt-4 border-t border-gray-100 group-hover:border-primary-100 transition-colors">
                     Ler artigo completo
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

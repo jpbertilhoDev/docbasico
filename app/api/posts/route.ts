@@ -3,9 +3,7 @@ import { supabase } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
-// Cache inteligente de 60 segundos (1 minuto) - Compromisso entre performance e atualização
-const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 60000; // 1 minuto
+// Cache removido para garantir atualização em tempo real (Requisito do Admin)
 
 export async function GET(request: Request) {
   try {
@@ -15,23 +13,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Criar chave de cache
-    const cacheKey = `${category || 'all'}_${search || ''}_${limit}_${offset}`;
-
-    // Verificar cache (1 minuto)
-    const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      console.log('[API /posts] Cache HIT -', cached.data.posts?.length || 0, 'posts');
-      return NextResponse.json(cached.data, {
-        headers: {
-          'Cache-Control': 'public, max-age=60, stale-while-revalidate=120',
-          'X-Cache': 'HIT',
-          'X-Posts-Count': String(cached.data.posts?.length || 0)
-        }
-      });
-    }
-
-    console.log('[API /posts] Cache MISS - Fetching from DB...', { category, search, limit, offset });
+    console.log('[API /posts] Fetching from DB...', { category, search, limit, offset });
 
     let query = (supabase.from('posts') as any)
       .select(`
@@ -67,41 +49,15 @@ export async function GET(request: Request) {
       );
     }
 
-    console.log(`[API /posts] Found ${data?.length || 0} posts`);
-
     // Log das primeiras notícias para debugging
     if (data && data.length > 0) {
-      console.log('[API /posts] First post:', {
-        title: data[0].title,
-        published: data[0].published,
-        published_at: data[0].published_at,
-        slug: data[0].slug
-      });
+      // console.log('[API /posts] First post:', { ... });
     }
 
-    const responseData = { posts: data || [] };
-
-    // Armazenar no cache
-    cache.set(cacheKey, {
-      data: responseData,
-      timestamp: Date.now()
-    });
-
-    // Limpar cache antigo (garbage collection)
-    if (cache.size > 100) {
-      const now = Date.now();
-      for (const [key, value] of cache.entries()) {
-        if (now - value.timestamp > CACHE_TTL) {
-          cache.delete(key);
-        }
-      }
-    }
-
-    return NextResponse.json(responseData, {
+    return NextResponse.json({ posts: data || [] }, {
       headers: {
-        'Cache-Control': 'public, max-age=60, stale-while-revalidate=120',
-        'X-Cache': 'MISS',
-        'X-Posts-Count': String(data?.length || 0)
+        'Cache-Control': 'no-store, max-age=0',
+        'CDN-Cache-Control': 'no-store'
       }
     });
   } catch (error) {

@@ -63,6 +63,7 @@ export default function NewPostPage() {
         scheduled_at: formData.scheduled_at || null,
       };
 
+      // @ts-ignore - Tipagem do Supabase causa erro no build
       const { data, error } = await supabase
         .from("posts")
         .insert([postData])

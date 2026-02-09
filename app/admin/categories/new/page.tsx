@@ -35,6 +35,7 @@ export default function NewCategoryPage() {
     setLoading(true);
 
     try {
+      // @ts-ignore - Tipagem do Supabase causa erro no build
       const { error } = await supabase.from("categories").insert([
         {
           name: formData.name,

@@ -31,8 +31,7 @@ export async function GET(request: Request) {
 
     console.log('[API /posts] Cache MISS - Fetching from DB...', { category, search, limit, offset });
 
-    let query = supabase
-      .from('posts')
+    let query = (supabase.from('posts') as any)
       .select(`
         *,
         categories (

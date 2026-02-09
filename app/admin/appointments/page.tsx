@@ -106,11 +106,10 @@ export default function AppointmentsPage() {
       // Usar o cliente Supabase diretamente (já autenticado)
       const { error } = await supabase
         .from('appointments')
-        // @ts-ignore - Tipagem do Supabase causa erro no build
         .update({
           status: newStatus,
           updated_at: new Date().toISOString()
-        })
+        } as any)
         .eq('id', id);
 
       if (error) {

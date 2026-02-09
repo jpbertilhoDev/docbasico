@@ -75,12 +75,11 @@ export default function EditCategoryPage() {
     try {
       const { error } = await supabase
         .from("categories")
-        // @ts-ignore - Tipagem do Supabase causa erro no build
         .update({
           name: formData.name,
           slug: formData.slug,
           description: formData.description || null,
-        })
+        } as any)
         .eq("id", categoryId);
 
       if (error) throw error;

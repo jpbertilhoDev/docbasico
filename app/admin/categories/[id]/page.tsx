@@ -79,8 +79,7 @@ export default function EditCategoryPage() {
         description: formData.description || null,
       };
 
-      const { error } = await supabase
-        .from("categories")
+      const { error } = await (supabase.from("categories") as any)
         .update(updateData)
         .eq("id", categoryId);
 

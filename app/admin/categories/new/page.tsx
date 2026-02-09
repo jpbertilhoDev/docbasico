@@ -43,7 +43,7 @@ export default function NewCategoryPage() {
         },
       ];
 
-      const { error } = await supabase.from("categories").insert(insertData);
+      const { error } = await (supabase.from("categories") as any).insert(insertData);
 
       if (error) throw error;
 

@@ -109,8 +109,7 @@ export default function AppointmentsPage() {
         updated_at: new Date().toISOString()
       };
 
-      const { error } = await supabase
-        .from('appointments')
+      const { error } = await (supabase.from('appointments') as any)
         .update(updateData)
         .eq('id', id);
 
@@ -154,8 +153,7 @@ export default function AppointmentsPage() {
       console.log('[DELETE] ID do agendamento:', id);
 
       // Verificar se o agendamento existe antes
-      const { data: beforeDelete } = await supabase
-        .from('appointments')
+      const { data: beforeDelete } = await (supabase.from('appointments') as any)
         .select('id, name')
         .eq('id', id)
         .maybeSingle();

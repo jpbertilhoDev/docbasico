@@ -64,8 +64,7 @@ export default function NewPostPage() {
       };
 
       const insertData: any = [postData];
-      const { data, error } = await supabase
-        .from("posts")
+      const { data, error } = await (supabase.from("posts") as any)
         .insert(insertData)
         .select()
         .single();

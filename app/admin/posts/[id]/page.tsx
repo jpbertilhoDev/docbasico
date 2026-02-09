@@ -102,8 +102,7 @@ export default function EditPostPage() {
       };
 
       const updateData: any = postData;
-      const { error } = await supabase
-        .from("posts")
+      const { error } = await (supabase.from("posts") as any)
         .update(updateData)
         .eq("id", postId);
 

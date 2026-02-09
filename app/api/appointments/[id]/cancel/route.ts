@@ -32,8 +32,7 @@ export async function POST(
     const normalizedPhone = phone.replace(/\D/g, '');
 
     // Primeiro, verificar se o agendamento existe e pertence ao usuário
-    const { data: appointment, error: fetchError } = await supabase
-      .from('appointments')
+    const { data: appointment, error: fetchError } = await (supabase.from('appointments') as any)
       .select('*')
       .eq('id', params.id)
       .single();
@@ -82,8 +81,7 @@ export async function POST(
     }
 
     // Atualizar status para cancelled
-    const { error: updateError } = await supabase
-      .from('appointments')
+    const { error: updateError } = await (supabase.from('appointments') as any)
       .update({
         status: 'cancelled',
         updated_at: new Date().toISOString()

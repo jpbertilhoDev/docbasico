@@ -6,8 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { data, error } = await supabase
-      .from('posts')
+    const { data, error } = await (supabase.from('posts') as any)
       .select(`
         *,
         categories (
@@ -51,8 +50,7 @@ export async function PUT(
     const body = await request.json();
     const { title, slug, excerpt, content, category_id, featured_image_url, published, published_at, scheduled_at } = body;
 
-    const { data, error } = await supabase
-      .from('posts')
+    const { data, error } = await (supabase.from('posts') as any)
       .update({
         title,
         slug,
@@ -99,8 +97,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { error } = await supabase
-      .from('posts')
+    const { error } = await (supabase.from('posts') as any)
       .delete()
       .eq('id', params.id);
 

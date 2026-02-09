@@ -48,8 +48,7 @@ export async function POST(request: Request) {
     console.log(`📰 ${articles.length} notícias recebidas da Perplexity\n`);
 
     // 2. Buscar todas as categorias
-    const { data: categories } = await supabase
-      .from('categories')
+    const { data: categories } = await (supabase.from('categories') as any)
       .select('id, slug');
 
     const categoryMap = new Map(categories?.map(c => [c.slug, c.id]) || []);
@@ -66,8 +65,7 @@ export async function POST(request: Request) {
 
         // Verificar se já existe (por URL)
         if (article.url && article.url.trim() !== '') {
-          const { data: existing } = await supabase
-            .from('posts')
+          const { data: existing } = await (supabase.from('posts') as any)
             .select('id, title')
             .eq('external_url', article.url)
             .maybeSingle();
@@ -86,8 +84,7 @@ export async function POST(request: Request) {
         let slug = generateSlug(article.title);
         
         // Verificar se slug já existe
-        const { data: slugExists } = await supabase
-          .from('posts')
+        const { data: slugExists } = await (supabase.from('posts') as any)
           .select('id')
           .eq('slug', slug)
           .maybeSingle();
@@ -108,8 +105,7 @@ export async function POST(request: Request) {
         const formattedContent = formatNewsContent(article.content);
 
         // Salvar no banco
-        const { data: newPost, error: insertError } = await supabase
-          .from('posts')
+        const { data: newPost, error: insertError } = await (supabase.from('posts') as any)
           .insert({
             title: article.title,
             slug: slug,

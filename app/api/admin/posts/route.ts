@@ -57,8 +57,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, error } = await supabase
-      .from('posts')
+    const { data, error } = await (supabase.from('posts') as any)
       .insert([
         {
           title,

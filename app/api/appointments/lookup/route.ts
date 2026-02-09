@@ -49,8 +49,7 @@ export async function POST(request: Request) {
 
     // Buscar agendamentos que correspondem ao email E telefone
     // Otimizado: selecionar apenas campos necessários para reduzir payload
-    const { data: appointments, error } = await supabase
-      .from('appointments')
+    const { data: appointments, error } = await (supabase.from('appointments') as any)
       .select('id, name, email, phone, service_slug, service_name, appointment_date, appointment_time, status, notes, documents_reminder, created_at')
       .ilike('email', email.trim())
       .order('appointment_date', { ascending: false })

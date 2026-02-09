@@ -26,8 +26,7 @@ export async function GET(request: Request) {
     const actualStartDate = startDate < today ? today : startDate;
 
     // Buscar slots disponíveis (apenas datas >= hoje)
-    const { data: slots, error: slotsError } = await supabase
-      .from('available_slots')
+    const { data: slots, error: slotsError } = await (supabase.from('available_slots') as any)
       .select('*')
       .gte('date', actualStartDate.toISOString().split('T')[0])
       .lte('date', endDate.toISOString().split('T')[0])
@@ -44,8 +43,7 @@ export async function GET(request: Request) {
     }
 
     // Buscar agendamentos confirmados para verificar disponibilidade real
-    const { data: appointments, error: appointmentsError } = await supabase
-      .from('appointments')
+    const { data: appointments, error: appointmentsError } = await (supabase.from('appointments') as any)
       .select('appointment_date, appointment_time, status')
       .gte('appointment_date', startDate.toISOString())
       .lte('appointment_date', endDate.toISOString())

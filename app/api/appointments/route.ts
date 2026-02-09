@@ -160,8 +160,7 @@ export async function POST(request: Request) {
     const dayStart = new Date(`${appointmentDateStr}T00:00:00`);
     const dayEnd = new Date(`${appointmentDateStr}T23:59:59`);
     
-    const { data: existingAppointments, error: checkError } = await supabase
-      .from('appointments')
+    const { data: existingAppointments, error: checkError } = await (supabase.from('appointments') as any)
       .select('id, appointment_date, appointment_time, status')
       .gte('appointment_date', dayStart.toISOString())
       .lte('appointment_date', dayEnd.toISOString())
@@ -198,8 +197,7 @@ export async function POST(request: Request) {
     }));
 
     // Criar agendamento
-    const { data, error } = await supabase
-      .from('appointments')
+    const { data, error } = await (supabase.from('appointments') as any)
       .insert({
         name,
         email,
@@ -226,8 +224,7 @@ export async function POST(request: Request) {
     }
 
     // Atualizar slot disponível (marcar como ocupado)
-    const { data: slotData } = await supabase
-      .from('available_slots')
+    const { data: slotData } = await (supabase.from('available_slots') as any)
       .select('current_appointments, max_appointments')
       .eq('date', appointmentDate)
       .eq('time_slot', appointmentTime)
@@ -235,8 +232,7 @@ export async function POST(request: Request) {
 
     if (slotData) {
       const newCount = (slotData.current_appointments || 0) + 1;
-      await supabase
-        .from('available_slots')
+      await (supabase.from('available_slots') as any)
         .update({ 
           current_appointments: newCount,
           is_available: newCount < (slotData.max_appointments || 1)
@@ -287,8 +283,7 @@ export async function POST(request: Request) {
             console.log(`[APPOINTMENTS] ✅ Notificação Email enviada e registrada`);
           }
 
-          await supabase
-            .from('appointments')
+          await (supabase.from('appointments') as any)
             .update(updateData)
             .eq('id', data.id);
         } else {

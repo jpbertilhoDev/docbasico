@@ -14,8 +14,7 @@ export async function GET(
     const { appointmentId } = params;
 
     // Buscar checklist
-    const { data: checklist, error: checklistError } = await supabase
-      .from("document_checklists")
+    const { data: checklist, error: checklistError } = await (supabase.from("document_checklists") as any)
       .select("*")
       .eq("appointment_id", appointmentId)
       .maybeSingle();
@@ -37,8 +36,7 @@ export async function GET(
     }
 
     // Buscar documentos do checklist
-    const { data: documents, error: documentsError } = await supabase
-      .from("checklist_documents")
+    const { data: documents, error: documentsError } = await (supabase.from("checklist_documents") as any)
       .select("*")
       .eq("checklist_id", checklist.id)
       .order("document_order", { ascending: true });
@@ -85,8 +83,7 @@ export async function PUT(
     }
 
     // Buscar agendamento para obter informações do serviço
-    const { data: appointment, error: appointmentError } = await supabase
-      .from("appointments")
+    const { data: appointment, error: appointmentError } = await (supabase.from("appointments") as any)
       .select("service_slug, service_name, name, email, phone")
       .eq("id", appointmentId)
       .maybeSingle();
@@ -99,8 +96,7 @@ export async function PUT(
     }
 
     // Buscar ou criar checklist
-    let { data: checklist, error: checklistError } = await supabase
-      .from("document_checklists")
+    let { data: checklist, error: checklistError } = await (supabase.from("document_checklists") as any)
       .select("*")
       .eq("appointment_id", appointmentId)
       .maybeSingle();
@@ -120,8 +116,7 @@ export async function PUT(
       const checkedDocs = documents.filter((d: any) => d.checked).length;
       const progress = totalDocs > 0 ? Math.round((checkedDocs / totalDocs) * 100) : 0;
 
-      const { data: newChecklist, error: createError } = await supabase
-        .from("document_checklists")
+      const { data: newChecklist, error: createError } = await (supabase.from("document_checklists") as any)
         .insert({
           appointment_id: appointmentId,
           service_slug: appointment.service_slug,
@@ -149,8 +144,7 @@ export async function PUT(
 
     // Atualizar documentos
     // Primeiro, deletar documentos existentes
-    const { error: deleteError } = await supabase
-      .from("checklist_documents")
+    const { error: deleteError } = await (supabase.from("checklist_documents") as any)
       .delete()
       .eq("checklist_id", checklist.id);
 
@@ -170,8 +164,7 @@ export async function PUT(
       client_notes: doc.clientNotes || null,
     }));
 
-    const { error: insertError } = await supabase
-      .from("checklist_documents")
+    const { error: insertError } = await (supabase.from("checklist_documents") as any)
       .insert(documentsToInsert);
 
     if (insertError) {
@@ -187,8 +180,7 @@ export async function PUT(
     const checkedDocs = documents.filter((d: any) => d.checked).length;
     const progress = totalDocs > 0 ? Math.round((checkedDocs / totalDocs) * 100) : 0;
 
-    const { error: updateError } = await supabase
-      .from("document_checklists")
+    const { error: updateError } = await (supabase.from("document_checklists") as any)
       .update({
         checked_documents: checkedDocs,
         progress_percentage: progress,
@@ -231,8 +223,7 @@ export async function POST(
     const { appointmentId } = params;
 
     // Buscar agendamento
-    const { data: appointment, error: appointmentError } = await supabase
-      .from("appointments")
+    const { data: appointment, error: appointmentError } = await (supabase.from("appointments") as any)
       .select("service_slug, service_name, name, email, phone")
       .eq("id", appointmentId)
       .maybeSingle();
@@ -245,8 +236,7 @@ export async function POST(
     }
 
     // Verificar se já existe checklist
-    const { data: existing } = await supabase
-      .from("document_checklists")
+    const { data: existing } = await (supabase.from("document_checklists") as any)
       .select("id")
       .eq("appointment_id", appointmentId)
       .maybeSingle();
@@ -269,8 +259,7 @@ export async function POST(
 
     // Criar checklist
     const totalDocs = serviceInfo.documents.length;
-    const { data: checklist, error: createError } = await supabase
-      .from("document_checklists")
+    const { data: checklist, error: createError } = await (supabase.from("document_checklists") as any)
       .insert({
         appointment_id: appointmentId,
         service_slug: appointment.service_slug,
@@ -303,8 +292,7 @@ export async function POST(
       checked: false,
     }));
 
-    const { error: insertError } = await supabase
-      .from("checklist_documents")
+    const { error: insertError } = await (supabase.from("checklist_documents") as any)
       .insert(documentsToInsert);
 
     if (insertError) {

@@ -21,8 +21,7 @@ export async function GET(request: Request) {
     tomorrowEnd.setHours(23, 59, 59, 999);
 
     // Buscar agendamentos confirmados ou pendentes para amanhã
-    const { data: appointments, error } = await supabase
-      .from('appointments')
+    const { data: appointments, error } = await (supabase.from('appointments') as any)
       .select('*')
       .gte('appointment_date', tomorrow.toISOString())
       .lte('appointment_date', tomorrowEnd.toISOString())
@@ -63,8 +62,7 @@ export async function GET(request: Request) {
 
         // Marcar como enviado se sucesso
         if (result.success) {
-          await supabase
-            .from('appointments')
+          await (supabase.from('appointments') as any)
             .update({ 
               sms_reminder_sent: new Date().toISOString(),
               updated_at: new Date().toISOString(),

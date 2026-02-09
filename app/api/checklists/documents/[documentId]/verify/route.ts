@@ -15,8 +15,7 @@ export async function PUT(
     const { verified_by_staff, staff_notes } = body;
 
     // Verificar se o documento existe
-    const { data: document, error: fetchError } = await supabase
-      .from("checklist_documents")
+    const { data: document, error: fetchError } = await (supabase.from("checklist_documents") as any)
       .select("id, checklist_id")
       .eq("id", documentId)
       .maybeSingle();
@@ -42,8 +41,7 @@ export async function PUT(
       updateData.staff_notes = staff_notes || null;
     }
 
-    const { error: updateError } = await supabase
-      .from("checklist_documents")
+    const { error: updateError } = await (supabase.from("checklist_documents") as any)
       .update(updateData)
       .eq("id", documentId);
 
@@ -56,8 +54,7 @@ export async function PUT(
     }
 
     // Atualizar status do checklist se todos os obrigatórios foram verificados
-    const { data: checklistDocs } = await supabase
-      .from("checklist_documents")
+    const { data: checklistDocs } = await (supabase.from("checklist_documents") as any)
       .select("required, verified_by_staff")
       .eq("checklist_id", document.checklist_id);
 
@@ -67,8 +64,7 @@ export async function PUT(
         .every((d) => d.verified_by_staff);
 
       if (allRequiredVerified) {
-        await supabase
-          .from("document_checklists")
+        await (supabase.from("document_checklists") as any)
           .update({
             status: "verified",
             verified_by_staff: true,

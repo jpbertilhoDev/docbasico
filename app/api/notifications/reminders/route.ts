@@ -24,8 +24,7 @@ export async function GET(request: Request) {
 
     // Buscar agendamentos confirmados ou pendentes para amanhã
     // Que ainda não receberam lembrete (qualquer método)
-    const { data: appointments, error } = await supabase
-      .from('appointments')
+    const { data: appointments, error } = await (supabase.from('appointments') as any)
       .select('*')
       .gte('appointment_date', tomorrow.toISOString())
       .lte('appointment_date', tomorrowEnd.toISOString())
@@ -91,8 +90,7 @@ export async function GET(request: Request) {
             updateData.email_reminder_sent = new Date().toISOString();
           }
 
-          await supabase
-            .from('appointments')
+          await (supabase.from('appointments') as any)
             .update(updateData)
             .eq('id', appointment.id);
         }

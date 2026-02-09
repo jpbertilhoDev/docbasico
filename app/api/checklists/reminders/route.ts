@@ -15,8 +15,7 @@ export async function POST(request: Request) {
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const { data: appointments, error: appointmentsError } = await supabase
-      .from("appointments")
+    const { data: appointments, error: appointmentsError } = await (supabase.from("appointments") as any)
       .select("id, name, email, phone, service_slug, service_name, appointment_date, appointment_time")
       .gte("appointment_date", now.toISOString().split("T")[0])
       .lte("appointment_date", tomorrow.toISOString().split("T")[0])
@@ -45,8 +44,7 @@ export async function POST(request: Request) {
     for (const appointment of appointments) {
       try {
         // Buscar checklist
-        const { data: checklist } = await supabase
-          .from("document_checklists")
+        const { data: checklist } = await (supabase.from("document_checklists") as any)
           .select("id, progress_percentage")
           .eq("appointment_id", appointment.id)
           .maybeSingle();
@@ -60,8 +58,7 @@ export async function POST(request: Request) {
         }
 
         // Buscar documentos do checklist
-        const { data: checklistData } = await supabase
-          .from("document_checklists")
+        const { data: checklistData } = await (supabase.from("document_checklists") as any)
           .select("id, progress_percentage")
           .eq("appointment_id", appointment.id)
           .maybeSingle();
@@ -69,8 +66,7 @@ export async function POST(request: Request) {
         // Buscar documentos do checklist
         let documents: any[] = [];
         if (checklistData) {
-          const { data: checklistDocs } = await supabase
-            .from("checklist_documents")
+          const { data: checklistDocs } = await (supabase.from("checklist_documents") as any)
             .select("document_name, required, checked, document_description")
             .eq("checklist_id", checklistData.id)
             .order("document_order", { ascending: true });

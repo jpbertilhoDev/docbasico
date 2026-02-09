@@ -6,8 +6,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const { data, error } = await supabase
-      .from('posts')
+    const { data, error } = await (supabase.from('posts') as any)
       .select(`
         *,
         categories (

@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Public_Sans, Merriweather } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "@/components/ConditionalLayout";
 
-const inter = Inter({
+const publicSans = Public_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const merriweather = Merriweather({
+  weight: ["300", "400", "700", "900"],
+  subsets: ["latin"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -21,20 +28,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-PT" className={inter.variable}>
+    <html lang="pt-PT" className={`${publicSans.variable} ${merriweather.variable}`}>
       <head>
         {/* Preconnect para APIs externas (melhora velocidade) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* DNS Prefetch para recursos externos */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        
+
         {/* Preload de recursos críticos */}
-        <link 
-          rel="preload" 
-          href="/api/appointments/lookup" 
-          as="fetch" 
+        <link
+          rel="preload"
+          href="/api/appointments/lookup"
+          as="fetch"
           crossOrigin="anonymous"
         />
       </head>

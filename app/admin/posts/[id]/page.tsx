@@ -101,10 +101,9 @@ export default function EditPostPage() {
           : null,
       };
 
-      // @ts-ignore - Tipagem do Supabase causa erro no build
       const { error } = await supabase
         .from("posts")
-        .update(postData)
+        .update(postData as any)
         .eq("id", postId);
 
       if (error) throw error;

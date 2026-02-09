@@ -3,8 +3,7 @@ import { supabase } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('categories')
+    const { data, error } = await (supabase.from('categories') as any)
       .select('*')
       .order('name', { ascending: true });
 
@@ -38,8 +37,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, error } = await supabase
-      .from('categories')
+    const { data, error } = await (supabase.from('categories') as any)
       .insert([
         {
           name,

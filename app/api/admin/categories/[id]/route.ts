@@ -6,8 +6,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { data, error } = await supabase
-      .from('categories')
+    const { data, error } = await (supabase.from('categories') as any)
       .select('*')
       .eq('id', params.id)
       .single();
@@ -44,8 +43,7 @@ export async function PUT(
     const body = await request.json();
     const { name, slug, description } = body;
 
-    const { data, error } = await supabase
-      .from('categories')
+    const { data, error } = await (supabase.from('categories') as any)
       .update({
         name,
         slug,
@@ -79,8 +77,7 @@ export async function DELETE(
 ) {
   try {
     // Check if category is being used by any posts
-    const { data: posts, error: postsError } = await supabase
-      .from('posts')
+    const { data: posts, error: postsError } = await (supabase.from('posts') as any)
       .select('id')
       .eq('category_id', params.id)
       .limit(1);
@@ -96,8 +93,7 @@ export async function DELETE(
       );
     }
 
-    const { error } = await supabase
-      .from('categories')
+    const { error } = await (supabase.from('categories') as any)
       .delete()
       .eq('id', params.id);
 

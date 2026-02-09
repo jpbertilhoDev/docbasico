@@ -10,8 +10,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { error } = await supabase
-      .from('appointments')
+    const { error } = await (supabase.from('appointments') as any)
       .delete()
       .eq('id', params.id);
 
@@ -23,7 +22,7 @@ export async function DELETE(
       );
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Agendamento excluído com sucesso'
     });
@@ -63,9 +62,8 @@ export async function PUT(
       );
     }
 
-    const { error } = await supabase
-      .from('appointments')
-      .update({ 
+    const { error } = await (supabase.from('appointments') as any)
+      .update({
         status,
         updated_at: new Date().toISOString()
       })
@@ -79,7 +77,7 @@ export async function PUT(
       );
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Status atualizado com sucesso'
     });

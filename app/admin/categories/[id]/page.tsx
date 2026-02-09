@@ -73,13 +73,15 @@ export default function EditCategoryPage() {
     setSaving(true);
 
     try {
+      const updateData: any = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description || null,
+      };
+
       const { error } = await supabase
         .from("categories")
-        .update({
-          name: formData.name,
-          slug: formData.slug,
-          description: formData.description || null,
-        } as any)
+        .update(updateData)
         .eq("id", categoryId);
 
       if (error) throw error;

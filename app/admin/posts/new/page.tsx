@@ -63,9 +63,10 @@ export default function NewPostPage() {
         scheduled_at: formData.scheduled_at || null,
       };
 
+      const insertData: any = [postData];
       const { data, error } = await supabase
         .from("posts")
-        .insert([postData] as any)
+        .insert(insertData)
         .select()
         .single();
 

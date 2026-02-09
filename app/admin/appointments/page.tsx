@@ -104,12 +104,14 @@ export default function AppointmentsPage() {
   const updateStatus = async (id: string, newStatus: AppointmentStatus) => {
     try {
       // Usar o cliente Supabase diretamente (já autenticado)
+      const updateData: any = {
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      };
+
       const { error } = await supabase
         .from('appointments')
-        .update({
-          status: newStatus,
-          updated_at: new Date().toISOString()
-        } as any)
+        .update(updateData)
         .eq('id', id);
 
       if (error) {

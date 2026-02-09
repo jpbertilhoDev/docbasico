@@ -35,13 +35,15 @@ export default function NewCategoryPage() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.from("categories").insert([
+      const insertData: any = [
         {
           name: formData.name,
           slug: formData.slug,
           description: formData.description || null,
         },
-      ] as any);
+      ];
+
+      const { error } = await supabase.from("categories").insert(insertData);
 
       if (error) throw error;
 

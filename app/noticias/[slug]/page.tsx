@@ -2,21 +2,34 @@ import Link from "next/link";
 import { ArrowLeft, Calendar, Share2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { notFound } from "next/navigation";
+import { supabase } from "@/lib/supabase/server";
+import { Metadata } from "next";
+
+export const revalidate = 60; // Revalidate every minute
+export const dynamic = 'force-dynamic'; // Ensure dynamic rendering
 
 async function getPost(slug: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    const res = await fetch(
-      `${baseUrl}/api/posts/${slug}`,
-      { cache: 'no-store' }
-    );
-    
-    if (!res.ok) {
+    const { data: post, error } = await (supabase.from('posts') as any)
+      .select(`
+        *,
+        categories (
+          id,
+          name,
+          slug
+        )
+      `)
+      .eq('slug', slug)
+      .eq('published', true)
+      .lte('published_at', new Date().toISOString())
+      .single();
+
+    if (error || !post) {
+      console.error('Error fetching post:', error);
       return null;
     }
-    
-    const data = await res.json();
-    return data.post;
+
+    return post;
   } catch (error) {
     console.error('Error fetching post:', error);
     return null;
@@ -25,22 +38,45 @@ async function getPost(slug: string) {
 
 async function getRelatedPosts(categoryId: string, currentSlug: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    const res = await fetch(
-      `${baseUrl}/api/posts?category=${categoryId}&limit=3`,
-      { cache: 'no-store' }
-    );
-    
-    if (!res.ok) {
+    const { data: posts, error } = await (supabase.from('posts') as any)
+      .select('id, title, slug, excerpt, featured_image_url, published_at')
+      .eq('category_id', categoryId)
+      .eq('published', true)
+      .neq('slug', currentSlug)
+      .lte('published_at', new Date().toISOString())
+      .order('published_at', { ascending: false })
+      .limit(3);
+
+    if (error) {
+      console.error('Error fetching related posts:', error);
       return [];
     }
-    
-    const data = await res.json();
-    return data.posts.filter((post: any) => post.slug !== currentSlug).slice(0, 3);
+
+    return posts || [];
   } catch (error) {
     console.error('Error fetching related posts:', error);
     return [];
   }
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPost(params.slug);
+
+  if (!post) {
+    return {
+      title: 'Notícia não encontrada | Doc Básico',
+    };
+  }
+
+  return {
+    title: `${post.title} | Doc Básico`,
+    description: post.excerpt || post.title,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: post.featured_image_url ? [post.featured_image_url] : [],
+    },
+  };
 }
 
 export default async function PostPage({ params }: { params: { slug: string } }) {
@@ -50,7 +86,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
     notFound();
   }
 
-  const relatedPosts = post.categories
+  const relatedPosts = post.categories?.id
     ? await getRelatedPosts(post.categories.id, params.slug)
     : [];
 
@@ -80,7 +116,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
               />
             </div>
           )}
-          
+
           {/* Header */}
           <header className="px-5 md:px-8 pt-6 md:pt-8 pb-4 md:pb-6 border-b border-gray-100">
             {post.categories && (

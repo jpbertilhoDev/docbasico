@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 // Cache inteligente de 60 segundos (1 minuto) - Compromisso entre performance e atualização
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL = 60000; // 1 minuto

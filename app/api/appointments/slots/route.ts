@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -21,7 +23,7 @@ export async function GET(request: Request) {
     // Data atual para filtrar apenas datas futuras ou hoje
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     // Garantir que começamos de hoje ou depois
     const actualStartDate = startDate < today ? today : startDate;
 
@@ -61,46 +63,46 @@ export async function GET(request: Request) {
 
     // Agrupar slots por data
     const slotsByDate: Record<string, any[]> = {};
-    
+
     slots?.forEach(slot => {
       const dateKey = slot.date;
       const slotDate = new Date(slot.date);
       slotDate.setHours(0, 0, 0, 0);
-      
+
       // Formatar hora para HH:MM (remover segundos se existirem)
-      const timeFormatted = slot.time_slot.includes(':') 
+      const timeFormatted = slot.time_slot.includes(':')
         ? slot.time_slot.split(':').slice(0, 2).join(':')
         : slot.time_slot;
-      
+
       // Extrair hora e minuto do slot
       const [slotHour, slotMinute] = timeFormatted.split(':').map(Number);
-      
+
       // Verificar se o horário já passou (apenas para hoje)
       const isToday = dateKey === todayStr;
       const isPastTime = isToday && (
-        slotHour < currentHour || 
+        slotHour < currentHour ||
         (slotHour === currentHour && slotMinute <= currentMinute)
       );
-      
+
       if (isPastTime) {
         // Pular horários passados do dia atual
         return;
       }
-      
+
       // Verificar se há agendamentos neste slot
       // Usar appointment_time diretamente para comparação mais precisa
       const hasAppointment = appointments?.some(apt => {
         const aptDate = new Date(apt.appointment_date);
         const aptDateStr = aptDate.toISOString().split('T')[0];
-        
+
         // Comparar data e hora
         if (aptDateStr !== slot.date) return false;
-        
+
         // Comparar hora formatada
         const aptTimeFormatted = apt.appointment_time.includes(':')
           ? apt.appointment_time.split(':').slice(0, 2).join(':')
           : apt.appointment_time;
-        
+
         return aptTimeFormatted === timeFormatted;
       });
 
@@ -113,7 +115,7 @@ export async function GET(request: Request) {
       }
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       slots: slotsByDate,
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],

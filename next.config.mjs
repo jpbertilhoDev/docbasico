@@ -31,7 +31,7 @@ const nextConfig = {
 
   // Experimental features para performance
   experimental: {
-    optimizeCss: true, // CSS otimizado
+    optimizeCss: false, // CSS otimizado (desativado pois requer 'critters')
     optimizePackageImports: ['lucide-react', 'date-fns'], // Tree-shaking
   },
 

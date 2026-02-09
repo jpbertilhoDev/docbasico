@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Public_Sans, Merriweather } from "next/font/google";
+import { Public_Sans, Merriweather, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "@/components/ConditionalLayout";
 
@@ -16,6 +16,12 @@ const merriweather = Merriweather({
   display: "swap",
 });
 
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Doc Basico - Serviços Burocráticos para Imigrantes em Portugal",
   description: "Serviços de documentação, legalização, consultoria fiscal e empresarial para imigrantes em Portugal. Renovação de residência, NIF, Segurança Social, IRS e muito mais.",
@@ -28,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-PT" className={`${publicSans.variable} ${merriweather.variable}`}>
+    <html lang="pt-PT" className={`${publicSans.variable} ${merriweather.variable} ${jetbrainsMono.variable}`}>
       <head>
         {/* Preconnect para APIs externas (melhora velocidade) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

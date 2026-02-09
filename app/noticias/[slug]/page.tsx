@@ -138,14 +138,14 @@ export default async function PostPage({ params }: { params: { slug: string } })
           {/* Content */}
           <div className="px-5 md:px-8 py-6 md:py-8">
             <div
-              className="prose prose-sm md:prose-base max-w-none
-                prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mb-4 prose-headings:mt-6
-                prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4 prose-p:text-base
+              className="prose prose-sm md:prose-base prose-news max-w-none
+                prose-headings:font-bold prose-headings:font-sans prose-headings:tracking-tight prose-headings:text-gray-900
+                prose-p:text-gray-800 prose-p:leading-relaxed prose-p:font-serif
                 prose-a:text-primary-600 prose-a:no-underline hover:prose-a:underline
                 prose-strong:text-gray-900 prose-strong:font-semibold
                 prose-ul:my-4 prose-ul:list-disc prose-ul:pl-6 prose-ul:space-y-2
                 prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-6 prose-ol:space-y-2
-                prose-li:text-gray-700 prose-li:leading-relaxed
+                prose-li:text-gray-800 prose-li:leading-relaxed
                 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
